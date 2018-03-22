@@ -1,0 +1,40 @@
+# https://github.com/netlify/netlify-cms/issues/1027
+version: '3.5'
+services:
+  # jekyll:
+  #   image: jekyll/jekyll
+  #   command: jekyll serve --watch --incremental
+  #   ports:
+  #     - 4000:4000
+  #   volumes:
+  #     - ./jekyll:/srv/jekyll
+
+  git-gateway:
+    build: ./git-gateway
+    env_file:
+      - ./git-gateway/.env
+    ports:
+      - 9999:9999
+    depends_on:
+      - gotrue
+    # links:
+    #   - gotrue
+
+  gotrue:
+    build: ./gotrue
+    env_file:
+      - ./gotrue/.env
+    ports:
+      - 8081:8081
+    depends_on:
+      - mysql
+    # links:
+    #   - mysql
+
+  mysql:
+    image: mysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DB: gotrue_development
+      MYSQL_ROOT_PASSWORD: password
